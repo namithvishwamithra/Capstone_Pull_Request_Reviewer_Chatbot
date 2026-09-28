@@ -1,0 +1,30 @@
+[
+  {
+    "id": "authz-object-ownership",
+    "description": "A changed route returns a caller-selected account without checking ownership.",
+    "diff": "diff --git a/app/routes.py b/app/routes.py\n--- a/app/routes.py\n+++ b/app/routes.py\n@@ -10,2 +10,3 @@\n def get_account(account_id):\n+    return database.load_account(account_id)\n",
+    "expected_findings": [
+      {
+        "severity": "major",
+        "category": "security",
+        "file": "app/routes.py",
+        "line_start": 11,
+        "line_end": 11
+      }
+    ]
+  },
+  {
+    "id": "validated-range-filtering",
+    "description": "The review pipeline must not accept model-invented locations.",
+    "diff": "diff --git a/app/service.py b/app/service.py\n--- a/app/service.py\n+++ b/app/service.py\n@@ -2,0 +3,2 @@\n+value = request.input\n+query(value)\n",
+    "expected_findings": [
+      {
+        "severity": "major",
+        "category": "bug",
+        "file": "app/service.py",
+        "line_start": 3,
+        "line_end": 4
+      }
+    ]
+  }
+]
