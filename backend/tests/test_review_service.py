@@ -79,3 +79,19 @@ async def test_review_output_gets_one_repair_attempt(monkeypatch):
     assert payload.summary == "fixed"
     with pytest.raises(StopIteration):
         next(responses)
+
+
+@pytest.mark.asyncio
+async def test_review_output_extracts_json_from_wrapped_model_response(monkeypatch):
+    calls = 0
+
+    async def fake_generate(self, prompt, *, temperature=0.1, json_mode=False):
+        nonlocal calls
+        calls += 1
+        return 'The result is:\n```json\n{"summary":"wrapped","findings":[]}\n```'
+
+    monkeypatch.setattr(review_service.GoogleAIClient, "generate", fake_generate)
+    payload = await review_service._validated_payload(review_service.GoogleAIClient(), "prompt")
+
+    assert payload.summary == "wrapped"
+    assert calls == 1
