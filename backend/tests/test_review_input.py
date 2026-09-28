@@ -27,7 +27,8 @@ def test_diff_normalization_accepts_line_endings_and_rejects_empty_input():
     assert exc.value.detail["code"] == "empty_diff"
 
 
-def test_review_size_cap_rejects_more_than_configured_lines():
+def test_review_size_cap_rejects_more_than_configured_lines(monkeypatch):
+    monkeypatch.setattr(settings, "max_changed_lines", 1000)
     diff = "diff --git a/a.py b/a.py\n--- a/a.py\n+++ b/a.py\n@@ -0,0 +1,1001 @@\n" + "".join(
         f"+line_{index}\n" for index in range(1001)
     )
@@ -35,6 +36,13 @@ def test_review_size_cap_rejects_more_than_configured_lines():
         normalize_diff(diff)
     assert exc.value.status_code == 413
     assert exc.value.detail["code"] == "diff_too_large"
+
+
+def test_review_size_cap_accepts_exactly_configured_lines(monkeypatch):
+    monkeypatch.setattr(settings, "max_changed_lines", 1)
+    diff = "diff --git a/a.py b/a.py\n--- a/a.py\n+++ b/a.py\n@@ -0,0 +1 @@\n+line\n"
+
+    assert normalize_diff(diff) == diff
 
 
 def test_daily_review_limit_is_scoped_per_account(tmp_path, monkeypatch):
