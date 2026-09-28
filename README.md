@@ -9,6 +9,8 @@ A GitHub PR review assistant that summarizes diffs, returns evidence-grounded fi
 - A GitHub OAuth application configured with callback URL `http://localhost:8000/api/auth/callback`
 - A Google AI Studio API key for server-side inference
 
+For a full fresh-machine setup walkthrough, see [SETUP.md](SETUP.md).
+
 ## Local setup
 
 1. Create `backend/.env` from `backend/.env.example` and set OAuth client ID/secret, model API key, and secure random values for `SESSION_SECRET_KEY` and `TOKEN_ENCRYPTION_KEY`. Never commit this file or place credentials in frontend environment variables.
