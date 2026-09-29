@@ -42,6 +42,28 @@ it("does not submit review code until privacy consent is accepted", async () => 
   );
 });
 
+it("clears the pull request URL without submitting the form", () => {
+  const onError = vi.fn();
+  render(
+    <ReviewForm
+      userId="github-user-1"
+      onReview={vi.fn()}
+      onBusyChange={vi.fn()}
+      onError={onError}
+      busy={false}
+    />,
+  );
+  const urlInput = screen.getByLabelText(/pull request url/i);
+  fireEvent.change(urlInput, {
+    target: { value: "https://github.com/example/project/pull/1" },
+  });
+
+  fireEvent.click(screen.getByRole("button", { name: "Clear" }));
+
+  expect(urlInput).toHaveValue("");
+  expect(onError).not.toHaveBeenCalled();
+});
+
 it("does not reuse one GitHub account's AI consent for another account", () => {
   localStorage.setItem("capstone-ai-consent:github-user-2", "accepted");
   render(

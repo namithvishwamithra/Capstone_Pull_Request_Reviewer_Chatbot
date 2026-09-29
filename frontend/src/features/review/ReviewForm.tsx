@@ -81,22 +81,32 @@ export function ReviewForm({
         </button>
       </div>
       {source === "url" ? (
-        <label className="field-label" htmlFor="pr-url">
-          Pull request URL
-          <input
-            id="pr-url"
-            type="url"
-            autoComplete="url"
-            placeholder="https://github.com/owner/repo/pull/123"
-            value={prUrl}
-            onChange={(event) => setPrUrl(event.target.value)}
-            required
-          />
+        <div className="field-label">
+          <label htmlFor="pr-url">Pull request URL</label>
+          <div className="url-input-row">
+            <input
+              id="pr-url"
+              type="url"
+              autoComplete="url"
+              placeholder="https://github.com/owner/repo/pull/123"
+              value={prUrl}
+              onChange={(event) => setPrUrl(event.target.value)}
+              required
+            />
+            <button
+              className="secondary-button"
+              type="button"
+              disabled={!prUrl || busy}
+              onClick={() => setPrUrl("")}
+            >
+              Clear
+            </button>
+          </div>
           <small>
             Public GitHub pull requests are supported with the current minimal
             OAuth permissions.
           </small>
-        </label>
+        </div>
       ) : (
         <label className="field-label" htmlFor="review-diff">
           Unified diff
