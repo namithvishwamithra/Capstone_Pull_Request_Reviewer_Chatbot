@@ -7,13 +7,13 @@ A GitHub PR review assistant that summarizes diffs, returns evidence-grounded fi
 - Python 3.11 or newer (developed with Python 3.14)
 - Node.js 22 or newer and npm
 - A GitHub OAuth application configured with callback URL `http://localhost:8000/api/auth/callback`
-- A Google AI Studio API key for server-side inference
+- A Google AI Studio or Anthropic API key for server-side inference
 
 For a full fresh-machine setup walkthrough, see [SETUP.md](SETUP.md).
 
 ## Local setup
 
-1. Create `backend/.env` from `backend/.env.example` and set OAuth client ID/secret, model API key, and secure random values for `SESSION_SECRET_KEY` and `TOKEN_ENCRYPTION_KEY`. Never commit this file or place credentials in frontend environment variables.
+1. Create `backend/.env` from `backend/.env.example` and set OAuth client ID/secret, the selected model API key, and secure random values for `SESSION_SECRET_KEY` and `TOKEN_ENCRYPTION_KEY`. Set `AI_PROVIDER=anthropic` with `ANTHROPIC_API_KEY` to use Claude, or leave `AI_PROVIDER=google` with `GOOGLE_AI_STUDIO_API_KEY` for Gemma. Never commit this file or place credentials in frontend environment variables.
 2. Generate a Fernet-compatible token encryption key in the Python environment with `python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"`; store the output in `TOKEN_ENCRYPTION_KEY`.
 3. Install and start the API:
 
@@ -36,7 +36,7 @@ For a full fresh-machine setup walkthrough, see [SETUP.md](SETUP.md).
 
 ## Configuration and privacy
 
-- GitHub OAuth credentials, encrypted access tokens, and the Google AI Studio API key are handled server-side.
+- GitHub OAuth credentials, encrypted access tokens, and the selected AI provider key are handled server-side.
 - `TOKEN_ENCRYPTION_KEY` must remain stable across restarts to decrypt stored GitHub credentials.
 - `SESSION_SECRET_KEY` must remain stable across restarts to preserve signed login sessions. Production deployments must set both keys and enable secure cookies behind HTTPS.
 - The frontend discloses Google AI Studio processing before a first review and requires consent before submission.

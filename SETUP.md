@@ -8,7 +8,7 @@ Use this guide to set up the project on a new computer. The commands below assum
 - Python 3.11 or newer
 - Node.js 22 or newer, including npm
 - A GitHub OAuth App
-- A Google AI Studio API key
+- A Google AI Studio or Anthropic API key
 
 ## 1. Get the project
 
@@ -32,12 +32,12 @@ Create a GitHub OAuth App in GitHub **Settings → Developer settings → OAuth 
 - **Homepage URL:** `http://localhost:5173`
 - **Authorization callback URL:** `http://localhost:8000/api/auth/callback`
 
-Create a Google AI Studio API key at <https://aistudio.google.com/app/apikey>.
+Create a Google AI Studio API key at <https://aistudio.google.com/app/apikey>, or create an Anthropic API key in the Anthropic Console.
 
 Set these values in `backend/.env`:
 
 - `GITHUB_CLIENT_ID` and `GITHUB_CLIENT_SECRET` from the OAuth App
-- `GOOGLE_AI_STUDIO_API_KEY` from Google AI Studio
+- `AI_PROVIDER=google` and `GOOGLE_AI_STUDIO_API_KEY` from Google AI Studio, or `AI_PROVIDER=anthropic`, `ANTHROPIC_API_KEY`, and `ANTHROPIC_MODEL` for Claude
 - `SESSION_SECRET_KEY`, generated with `python3 -c 'import secrets; print(secrets.token_urlsafe(32))'`
 - `TOKEN_ENCRYPTION_KEY`, generated after installing backend requirements in step 3 with `python -c 'from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())'`
 
