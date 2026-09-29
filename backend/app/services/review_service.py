@@ -35,7 +35,22 @@ def _validated_json_payload(text: str) -> ReviewPayload:
                 continue
             try:
                 value, _ = decoder.raw_decode(stripped[start:])
-                return ReviewPayload.model_validate(value)
+                try:
+                    return ReviewPayload.model_validate(value)
+                except ValidationError:
+                    if not isinstance(value, dict):
+                        raise
+                    summary = value.get("summary")
+                    raw_findings = value.get("findings")
+                    if not isinstance(summary, str) or not isinstance(raw_findings, list):
+                        raise
+                    valid_findings = []
+                    for raw_finding in raw_findings:
+                        try:
+                            valid_findings.append(Finding.model_validate(raw_finding))
+                        except ValidationError:
+                            continue
+                    return ReviewPayload(summary=summary, findings=valid_findings)
             except (ValidationError, ValueError):
                 continue
         raise direct_error

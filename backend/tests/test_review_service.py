@@ -95,3 +95,18 @@ async def test_review_output_extracts_json_from_wrapped_model_response(monkeypat
 
     assert payload.summary == "wrapped"
     assert calls == 1
+
+
+def test_review_output_keeps_summary_and_valid_findings_when_one_finding_is_malformed():
+    payload = review_service._validated_json_payload(
+        '{"summary":"partial result","findings":['
+        '{"severity":"major","category":"bug","file":"src/a.py",'
+        '"line_start":2,"line_end":2,"title":"Risk","explanation":"A risk."},'
+        '{"severity":"urgent","category":"bug","file":"src/a.py",'
+        '"line_start":2,"line_end":2,"title":"Invalid","explanation":"Drop me."}'
+        "]}"
+    )
+
+    assert payload.summary == "partial result"
+    assert len(payload.findings) == 1
+    assert payload.findings[0].title == "Risk"
