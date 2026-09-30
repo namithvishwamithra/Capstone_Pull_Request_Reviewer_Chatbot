@@ -46,6 +46,11 @@ def test_excludes_lockfiles_by_default_and_validates_changed_ranges():
     assert not validate_finding_location("package-lock.json", 1, 1, files)
 
 
+def test_finding_range_rejects_unmodified_end_line():
+    files = parse_unified_diff(DIFF)
+    assert not validate_finding_location("src/auth.py", 6, 7, files)
+
+
 def test_parser_accepts_deleted_file_without_claiming_added_code():
     deleted = """diff --git a/old.txt b/old.txt
 --- a/old.txt

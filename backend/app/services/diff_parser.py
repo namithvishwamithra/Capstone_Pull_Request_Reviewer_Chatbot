@@ -126,5 +126,5 @@ def validate_finding_location(path: str, start: int, end: int, files: list[DiffF
         None,
     )
     return bool(
-        file and start <= end and all(line in file.added_lines for line in range(start, end + 1))
+        file and start <= end and all(line in file.added_lines for line in range(start, end))
     )
