@@ -46,6 +46,28 @@ async def test_review_service_filters_ungrounded_findings(monkeypatch):
     assert count == 1
 
 
+@pytest.mark.asyncio
+async def test_review_service_keeps_llm_prompts_under_safe_size(monkeypatch):
+    captured_sizes: list[int] = []
+
+    async def fake_generate(self, prompt, *, temperature=0.1, json_mode=False):
+        captured_sizes.append(len(prompt))
+        return '{"summary":"ok","findings":[]}'
+
+    monkeypatch.setattr(review_service.GoogleAIClient, "generate", fake_generate)
+    diff_lines = [
+        "diff --git a/src/large.py b/src/large.py",
+        "index 1111111..2222222 100644",
+        "--- a/src/large.py",
+        "+++ b/src/large.py",
+    ]
+    diff_lines.extend(f"+line_{index} = {index}" for index in range(600))
+    await review_service.review_diff("\n".join(diff_lines), "large diff", "")
+
+    assert captured_sizes
+    assert max(captured_sizes) <= review_service.MAX_LLM_PROMPT_CHARS
+
+
 def test_review_payload_rejects_invalid_severity_and_reversed_range():
     with pytest.raises(ValidationError):
         ReviewPayload.model_validate(

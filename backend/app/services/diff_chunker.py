@@ -1,6 +1,6 @@
 import re
 
-MAX_CHUNK_CHARS = 18_000
+MAX_CHUNK_CHARS = 10_000
 _HUNK_HEADER = re.compile(r"^@@ -(\d+)(?:,(\d+))? \+(\d+)(?:,(\d+))? @@(.*)$")
 
 

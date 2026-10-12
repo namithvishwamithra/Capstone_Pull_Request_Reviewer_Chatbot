@@ -42,7 +42,7 @@ class _GoogleAIClient:
             "contents": [{"role": "user", "parts": [{"text": prompt}]}],
             "generationConfig": {"temperature": temperature, "maxOutputTokens": 8192},
         }
-        if json_mode:
+        if json_mode and len(prompt) <= 12_000:
             payload["generationConfig"]["responseMimeType"] = "application/json"  # type: ignore[index]
         for attempt in range(settings.upstream_max_retries + 1):
             try:

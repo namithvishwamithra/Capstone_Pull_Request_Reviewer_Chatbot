@@ -6,7 +6,7 @@ from pydantic import ValidationError
 from app.core.config import settings
 from app.core.errors import AppError
 from app.schemas.review import Finding, ReviewPayload
-from app.services.diff_chunker import chunk_diff
+from app.services.diff_chunker import MAX_CHUNK_CHARS, chunk_diff
 from app.services.diff_parser import (
     DiffFile,
     changed_line_count,
@@ -54,6 +54,9 @@ def _validated_json_payload(text: str) -> ReviewPayload:
             except (ValidationError, ValueError):
                 continue
         raise direct_error
+
+
+MAX_LLM_PROMPT_CHARS = 12_000
 
 
 def _prompt(title: str, description: str, diff: str) -> str:
@@ -106,7 +109,7 @@ async def review_diff(
         )
     eligible_paths = {file.path for file in eligible}
     eligible_sections = []
-    for section in chunk_diff(diff):
+    for section in chunk_diff(diff, max_chars=min(MAX_CHUNK_CHARS, MAX_LLM_PROMPT_CHARS)):
         if any(f"b/{path}" in section or f"+++ {path}" in section for path in eligible_paths):
             eligible_sections.append(section)
     if not eligible_sections:
